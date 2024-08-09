@@ -51,34 +51,71 @@ app.post("/register", async (req, res) => {
     }
 })
 
-
 app.post("/location", async (req, res) => {
-    const data = req.body;
+    try {
+        const data = req.body;
 
+        // Check if a user with the given empNumber already exists
+        const existingUser = await Location.findOne({ empNumber: req.body.empNumber });
 
-    // if (data.password != data.confirmpassword) {
-    //     res.status(400).send({ status: "password are differnt" });
-    // }
+        if (existingUser) {
+            // If the user exists, update the longitude and latitude
+            const updatedUser = await Location.findOneAndUpdate(
+                { empNumber: req.body.empNumber }, // Filter condition
+                {
+                    $set: {
+                        longitude: req.body.longitude,
+                        latitude: req.body.latitude
+                    }
+                },
+                { new: true } // Option to return the updated document
+            );
+            
+            res.status(200).send({ status: "Location updated", data: updatedUser });
+        } else {
+            // If the user does not exist, create a new record
+            const newUser = new Location({
+                empNumber: req.body.empNumber,
+                longitude: req.body.longitude,
+                latitude: req.body.latitude
+            });
 
-
-    console.log(data);
-    const user = Location({
-        empNumber: req.body.empNumber,
-        longitude: req.body.longitude,
-        latitude: req.body.latitude
-    })
-
-    const useData = await Location.findOne({ email: req.body.empNumber });
-    if (useData) {
-        res.status(400).send({ status: "email already exist" })
+            const result = await newUser.save();
+            res.status(201).send({ status: "Location created", data: result });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ status: "Error", message: "An error occurred while processing the request." });
     }
-    else {
+});
 
-        const result = await user.save();
-        console.log(result);
-        res.send(result);
-    }
-})
+// app.post("/location", async (req, res) => {
+//     const data = req.body;
+
+
+//     // if (data.password != data.confirmpassword) {
+//     //     res.status(400).send({ status: "password are differnt" });
+//     // }
+
+
+//     console.log(data);
+//     const user = Location({
+//         empNumber: req.body.empNumber,
+//         longitude: req.body.longitude,
+//         latitude: req.body.latitude
+//     })
+
+//     const useData = await Location.findOne({ email: req.body.empNumber });
+//     if (useData) {
+//         res.status(400).send({ status: "email already exist" })
+//     }
+//     else {
+
+//         const result = await user.save();
+//         console.log(result);
+//         res.send(result);
+//     }
+// })
 
 
 
