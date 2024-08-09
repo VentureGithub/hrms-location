@@ -14,6 +14,14 @@ mongoose.connect("mongodb+srv://zaidmohd9761:4np2AwlnTnV2OMJ9@cluster0.xqlopsr.m
 
 app.use("/api",user);
 
-app.listen(5523,function(){
+const PORT = process.env.PORT;
+// streamingApp_1.httpServer.listen(PORT, function () {
+//     console.log(`${process.env.USERNAME}`);
+//     console.log(`${process.env.PASSWORD}`);
+//     console.log(`listening on  192 wala ${PORT}`);
+// });
+
+app.listen(PORT,function(){
+    console.log(`listening on  192 wala ${PORT}`);
     console.log("server is ready")
 })  
